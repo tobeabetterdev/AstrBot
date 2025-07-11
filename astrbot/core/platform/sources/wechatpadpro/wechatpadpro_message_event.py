@@ -36,6 +36,25 @@ class WeChatPadProMessageEvent(AstrMessageEvent):
         self.message_obj = message_obj  # Save the full message object
         self.adapter = adapter  # Save the adapter instance
 
+    async def send_streaming(
+        self, generator, use_fallback: bool = False
+    ):
+        buffer = None
+        async for chain in generator:
+            if not buffer:
+                buffer = chain
+            else:
+                buffer.chain.extend(chain.chain)
+        
+        if not buffer:
+            return
+
+        buffer.squash_plain() 
+        
+        await self.send(buffer)
+        # 注意：最后调用 super().send_streaming 是为了正确处理统计等基类逻辑
+        return await super().send_streaming(generator, use_fallback)
+
     async def send(self, message: MessageChain):
         async with aiohttp.ClientSession() as session:
             for comp in message.chain:
