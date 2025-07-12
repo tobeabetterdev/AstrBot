@@ -29,7 +29,9 @@ import os
 import typing as T
 import uuid
 from enum import Enum
+from urllib.parse import urlparse
 
+import aiohttp
 from pydantic.v1 import BaseModel
 
 from astrbot.core import astrbot_config, file_token_service, logger
@@ -267,12 +269,27 @@ class Video(BaseMessageComponent):
             return url[8:]
         elif url and url.startswith("http"):
             download_dir = os.path.join(get_astrbot_data_path(), "temp")
-            video_file_path = os.path.join(download_dir, f"{uuid.uuid4().hex}")
-            await download_file(url, video_file_path)
-            if os.path.exists(video_file_path):
-                return os.path.abspath(video_file_path)
-            else:
-                raise Exception(f"download failed: {url}")
+            os.makedirs(download_dir, exist_ok=True)
+            
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get(url, timeout=30, allow_redirects=True) as response:
+                        response.raise_for_status()
+                        
+                        # 从重定向后的最终URL获取真实后缀名
+                        final_url = str(response.url)
+                        path = urlparse(final_url).path
+                        ext = os.path.splitext(path)[1]
+
+                        video_file_path = os.path.join(download_dir, f"{uuid.uuid4().hex}{ext}")
+                        
+                        with open(video_file_path, "wb") as f:
+                            f.write(await response.read())
+                                
+                        return os.path.abspath(video_file_path)
+            except Exception as e:
+                logger.error(f"下载视频时出错: {url}, 错误: {e}")
+                raise Exception(f"download failed: {url}") from e
         elif os.path.exists(url):
             return os.path.abspath(url)
         else:
