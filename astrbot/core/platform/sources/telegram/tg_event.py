@@ -13,6 +13,7 @@ from astrbot.api.message_components import (
     Record,
 )
 from telegram.ext import ExtBot
+from astrbot.core.message.components import Video
 from astrbot.core.utils.io import download_file
 from astrbot import logger
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
@@ -125,6 +126,9 @@ class TelegramPlatformEvent(AstrMessageEvent):
             elif isinstance(i, Record):
                 path = await i.convert_to_file_path()
                 await client.send_voice(voice=path, **payload)
+            elif isinstance(i, Video):
+                path = await i.convert_to_file_path()
+                await client.send_video(video=path, **payload)
 
     async def send(self, message: MessageChain):
         if self.get_message_type() == MessageType.GROUP_MESSAGE:
@@ -186,6 +190,10 @@ class TelegramPlatformEvent(AstrMessageEvent):
                     elif isinstance(i, Record):
                         path = await i.convert_to_file_path()
                         await self.client.send_voice(voice=path, **payload)
+                        continue
+                    elif isinstance(i, Video):
+                        path = await i.convert_to_file_path()
+                        await self.client.send_video(video=path, **payload)
                         continue
                     else:
                         logger.warning(f"不支持的消息类型: {type(i)}")
