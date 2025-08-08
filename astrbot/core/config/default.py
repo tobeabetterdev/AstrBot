@@ -6,7 +6,7 @@ import os
 
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
-VERSION = "3.5.23"
+VERSION = "3.5.24"
 DB_PATH = os.path.join(get_astrbot_data_path(), "data_v3.db")
 
 # 默认配置
@@ -757,6 +757,19 @@ CONFIG_METADATA_2 = {
                             "model": "deepseek/deepseek-r1",
                         },
                     },
+                    "优云智算": {
+                        "id": "compshare",
+                        "provider": "compshare",
+                        "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
+                        "enable": True,
+                        "key": [],
+                        "api_base": "https://api.modelverse.cn/v1",
+                        "timeout": 120,
+                        "model_config": {
+                            "model": "moonshotai/Kimi-K2-Instruct",
+                        },
+                    },
                     "Kimi": {
                         "id": "moonshot",
                         "provider": "moonshot",
@@ -813,6 +826,19 @@ CONFIG_METADATA_2 = {
                         },
                         "variables": {},
                         "timeout": 60,
+                    },
+                    "ModelScope": {
+                        "id": "modelscope",
+                        "provider": "modelscope",
+                        "type": "openai_chat_completion",
+                        "provider_type": "chat_completion",
+                        "enable": True,
+                        "key": [],
+                        "timeout": 120,
+                        "api_base": "https://api-inference.modelscope.cn/v1",
+                        "model_config": {
+                            "model": "Qwen/Qwen3-32B",
+                        },
                     },
                     "FastGPT": {
                         "id": "fastgpt",
