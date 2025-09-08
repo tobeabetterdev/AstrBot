@@ -6,7 +6,7 @@ import os
 
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
-VERSION = "4.0.0-beta.5"
+VERSION = "4.0.0"
 DB_PATH = os.path.join(get_astrbot_data_path(), "data_v4.db")
 
 # 默认配置
@@ -103,6 +103,7 @@ DEFAULT_CONFIG = {
     "t2i_strategy": "remote",
     "t2i_endpoint": "",
     "t2i_use_file_service": False,
+    "t2i_active_template": "base",
     "http_proxy": "",
     "no_proxy": ["localhost", "127.0.0.1", "::1"],
     "dashboard": {
@@ -246,8 +247,49 @@ CONFIG_METADATA_2 = {
                         "slack_webhook_port": 6197,
                         "slack_webhook_path": "/astrbot-slack-webhook/callback",
                     },
+                    "Satori": {
+                        "id": "satori",
+                        "type": "satori",
+                        "enable": False,
+                        "satori_api_base_url": "http://localhost:5140/satori/v1",
+                        "satori_endpoint": "ws://127.0.0.1:5140/satori/v1/events",
+                        "satori_token": "",
+                        "satori_auto_reconnect": True,
+                        "satori_heartbeat_interval": 10,
+                        "satori_reconnect_delay": 5,
+                    },
                 },
                 "items": {
+                    "satori_api_base_url": {
+                        "description": "Satori API Base URL",
+                        "type": "string",
+                        "hint": "The base URL for the Satori API.",
+                    },
+                    "satori_endpoint": {
+                        "description": "Satori WebSocket Endpoint",
+                        "type": "string",
+                        "hint": "The WebSocket endpoint for Satori events.",
+                    },
+                    "satori_token": {
+                        "description": "Satori Token",
+                        "type": "string",
+                        "hint": "The token used for authenticating with the Satori API.",
+                    },
+                    "satori_auto_reconnect": {
+                        "description": "Enable Auto Reconnect",
+                        "type": "bool",
+                        "hint": "Whether to automatically reconnect the WebSocket on disconnection.",
+                    },
+                    "satori_heartbeat_interval": {
+                        "description": "Satori Heartbeat Interval",
+                        "type": "int",
+                        "hint": "The interval (in seconds) for sending heartbeat messages.",
+                    },
+                    "satori_reconnect_delay": {
+                        "description": "Satori Reconnect Delay",
+                        "type": "int",
+                        "hint": "The delay (in seconds) before attempting to reconnect.",
+                    },
                     "slack_connection_mode": {
                         "description": "Slack Connection Mode",
                         "type": "string",
@@ -2292,6 +2334,12 @@ CONFIG_METADATA_3_SYSTEM = {
                             "t2i_strategy": "remote",
                         },
                         "_special": "t2i_template",
+                    },
+                    "t2i_active_template": {
+                        "description": "当前应用的文转图渲染模板",
+                        "type": "string",
+                        "hint": "此处的值由文转图模板管理页面进行维护。",
+                        "invisible": True,
                     },
                     "log_level": {
                         "description": "控制台日志级别",
