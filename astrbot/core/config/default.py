@@ -6,7 +6,7 @@ import os
 
 from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
-VERSION = "4.0.0"
+VERSION = "4.1.4"
 DB_PATH = os.path.join(get_astrbot_data_path(), "data_v4.db")
 
 # 默认配置
@@ -56,10 +56,11 @@ DEFAULT_CONFIG = {
         "wake_prefix": "",
         "web_search": False,
         "websearch_provider": "default",
-        "websearch_tavily_key": "",
+        "websearch_tavily_key": [],
         "web_search_link": False,
         "display_reasoning_text": False,
         "identifier": False,
+        "group_name_display": False,
         "datetime_system_prompt": True,
         "default_personality": "default",
         "persona_pool": ["*"],
@@ -599,6 +600,7 @@ CONFIG_METADATA_2 = {
                         "api_base": "https://api.openai.com/v1",
                         "timeout": 120,
                         "model_config": {"model": "gpt-4o-mini", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                         "hint": "也兼容所有与 OpenAI API 兼容的服务。",
                     },
@@ -613,6 +615,7 @@ CONFIG_METADATA_2 = {
                         "api_base": "",
                         "timeout": 120,
                         "model_config": {"model": "gpt-4o-mini", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "xAI": {
@@ -625,6 +628,7 @@ CONFIG_METADATA_2 = {
                         "api_base": "https://api.x.ai/v1",
                         "timeout": 120,
                         "model_config": {"model": "grok-2-latest", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "Anthropic": {
@@ -654,6 +658,7 @@ CONFIG_METADATA_2 = {
                         "key": ["ollama"],  # ollama 的 key 默认是 ollama
                         "api_base": "http://localhost:11434/v1",
                         "model_config": {"model": "llama3.1-8b", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "LM Studio": {
@@ -667,6 +672,7 @@ CONFIG_METADATA_2 = {
                         "model_config": {
                             "model": "llama-3.1-8b",
                         },
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "Gemini(OpenAI兼容)": {
@@ -682,6 +688,7 @@ CONFIG_METADATA_2 = {
                             "model": "gemini-1.5-flash",
                             "temperature": 0.4,
                         },
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "Gemini": {
@@ -722,6 +729,7 @@ CONFIG_METADATA_2 = {
                         "api_base": "https://api.deepseek.com/v1",
                         "timeout": 120,
                         "model_config": {"model": "deepseek-chat", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "302.AI": {
@@ -734,6 +742,7 @@ CONFIG_METADATA_2 = {
                         "api_base": "https://api.302.ai/v1",
                         "timeout": 120,
                         "model_config": {"model": "gpt-4.1-mini", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "硅基流动": {
@@ -749,6 +758,7 @@ CONFIG_METADATA_2 = {
                             "model": "deepseek-ai/DeepSeek-V3",
                             "temperature": 0.4,
                         },
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "PPIO派欧云": {
@@ -764,6 +774,7 @@ CONFIG_METADATA_2 = {
                             "model": "deepseek/deepseek-r1",
                             "temperature": 0.4,
                         },
+                        "custom_extra_body": {},
                     },
                     "优云智算": {
                         "id": "compshare",
@@ -777,6 +788,7 @@ CONFIG_METADATA_2 = {
                         "model_config": {
                             "model": "moonshotai/Kimi-K2-Instruct",
                         },
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "Kimi": {
@@ -789,6 +801,7 @@ CONFIG_METADATA_2 = {
                         "timeout": 120,
                         "api_base": "https://api.moonshot.cn/v1",
                         "model_config": {"model": "moonshot-v1-8k", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "智谱 AI": {
@@ -847,6 +860,7 @@ CONFIG_METADATA_2 = {
                         "timeout": 120,
                         "api_base": "https://api-inference.modelscope.cn/v1",
                         "model_config": {"model": "Qwen/Qwen3-32B", "temperature": 0.4},
+                        "custom_extra_body": {},
                         "modalities": ["text", "image", "tool_use"],
                     },
                     "FastGPT": {
@@ -858,6 +872,7 @@ CONFIG_METADATA_2 = {
                         "key": [],
                         "api_base": "https://api.fastgpt.in/api/v1",
                         "timeout": 60,
+                        "custom_extra_body": {},
                     },
                     "Whisper(API)": {
                         "id": "whisper",
@@ -1101,6 +1116,12 @@ CONFIG_METADATA_2 = {
                         "labels": ["文本", "图像", "工具使用"],
                         "render_type": "checkbox",
                         "hint": "模型支持的模态。如所填写的模型不支持图像，请取消勾选图像。",
+                    },
+                    "custom_extra_body": {
+                        "description": "自定义请求体参数",
+                        "type": "dict",
+                        "items": {},
+                        "hint": "此处添加的键值对将被合并到发送给 API 的 extra_body 中。值可以是字符串、数字或布尔值。",
                     },
                     "provider": {
                         "type": "string",
@@ -1704,6 +1725,9 @@ CONFIG_METADATA_2 = {
                     "identifier": {
                         "type": "bool",
                     },
+                    "group_name_display": {
+                        "type": "bool",
+                    },
                     "datetime_system_prompt": {
                         "type": "bool",
                     },
@@ -1883,17 +1907,31 @@ CONFIG_METADATA_3 = {
                         "_special": "select_provider",
                         "hint": "留空代表不使用。可用于不支持视觉模态的聊天模型。",
                     },
+                    "provider_stt_settings.enable": {
+                        "description": "默认启用语音转文本",
+                        "type": "bool",
+                    },
                     "provider_stt_settings.provider_id": {
                         "description": "语音转文本模型",
                         "type": "string",
                         "hint": "留空代表不使用。",
                         "_special": "select_provider_stt",
+                        "condition": {
+                            "provider_stt_settings.enable": True,
+                        },
+                    },
+                    "provider_tts_settings.enable": {
+                        "description": "默认启用文本转语音",
+                        "type": "bool",
                     },
                     "provider_tts_settings.provider_id": {
                         "description": "文本转语音模型",
                         "type": "string",
                         "hint": "留空代表不使用。",
                         "_special": "select_provider_tts",
+                        "condition": {
+                            "provider_tts_settings.enable": True,
+                        },
                     },
                     "provider_settings.image_caption_prompt": {
                         "description": "图片转述提示词",
@@ -1938,7 +1976,9 @@ CONFIG_METADATA_3 = {
                     },
                     "provider_settings.websearch_tavily_key": {
                         "description": "Tavily API Key",
-                        "type": "string",
+                        "type": "list",
+                        "items": {"type": "string"},
+                        "hint": "可添加多个 Key 进行轮询。",
                         "condition": {
                             "provider_settings.websearch_provider": "tavily",
                         },
@@ -1960,6 +2000,11 @@ CONFIG_METADATA_3 = {
                     "provider_settings.identifier": {
                         "description": "用户识别",
                         "type": "bool",
+                    },
+                    "provider_settings.group_name_display": {
+                        "description": "显示群名称",
+                        "type": "bool",
+                        "hint": "启用后，在支持的平台(aiocqhttp)上会在 prompt 中包含群名称信息。",
                     },
                     "provider_settings.datetime_system_prompt": {
                         "description": "现实世界时间感知",
@@ -2108,41 +2153,41 @@ CONFIG_METADATA_3 = {
                 "description": "内容安全",
                 "type": "object",
                 "items": {
-                    "platform_settings.content_safety.also_use_in_response": {
+                    "content_safety.also_use_in_response": {
                         "description": "同时检查模型的响应内容",
                         "type": "bool",
                     },
-                    "platform_settings.content_safety.baidu_aip.enable": {
+                    "content_safety.baidu_aip.enable": {
                         "description": "使用百度内容安全审核",
                         "type": "bool",
                         "hint": "您需要手动安装 baidu-aip 库。",
                     },
-                    "platform_settings.content_safety.baidu_aip.app_id": {
+                    "content_safety.baidu_aip.app_id": {
                         "description": "App ID",
                         "type": "string",
                         "condition": {
-                            "platform_settings.content_safety.baidu_aip.enable": True,
+                            "content_safety.baidu_aip.enable": True,
                         },
                     },
-                    "platform_settings.content_safety.baidu_aip.api_key": {
+                    "content_safety.baidu_aip.api_key": {
                         "description": "API Key",
                         "type": "string",
                         "condition": {
-                            "platform_settings.content_safety.baidu_aip.enable": True,
+                            "content_safety.baidu_aip.enable": True,
                         },
                     },
-                    "platform_settings.content_safety.baidu_aip.secret_key": {
+                    "content_safety.baidu_aip.secret_key": {
                         "description": "Secret Key",
                         "type": "string",
                         "condition": {
-                            "platform_settings.content_safety.baidu_aip.enable": True,
+                            "content_safety.baidu_aip.enable": True,
                         },
                     },
-                    "platform_settings.content_safety.internal_keywords.enable": {
+                    "content_safety.internal_keywords.enable": {
                         "description": "关键词检查",
                         "type": "bool",
                     },
-                    "platform_settings.content_safety.internal_keywords.extra_keywords": {
+                    "content_safety.internal_keywords.extra_keywords": {
                         "description": "额外关键词",
                         "type": "list",
                         "items": {"type": "string"},

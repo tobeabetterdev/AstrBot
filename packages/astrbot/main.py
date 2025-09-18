@@ -1214,6 +1214,12 @@ UID: {user_id} 此 ID 可用于设置管理员。
             user_info = f"\n[User ID: {user_id}, Nickname: {user_nickname}]\n"
             req.prompt = user_info + req.prompt
 
+        if cfg.get("group_name_display") and event.message_obj.group_id:
+            group_name = event.message_obj.group.group_name
+
+            if group_name:
+                req.system_prompt += f"\nGroup name: {group_name}\n"
+
         # 启用附加时间戳
         if cfg.get("datetime_system_prompt"):
             current_time = None
@@ -1232,11 +1238,13 @@ UID: {user_id} 此 ID 可用于设置管理员。
 
         if req.conversation:
             # persona inject
-            persona_id = req.conversation.persona_id
+            persona_id = req.conversation.persona_id or cfg.get("default_personality")
             if not persona_id and persona_id != "[%None]":  # [%None] 为用户取消人格
-                persona_id = self.context.persona_manager.selected_default_persona_v3[
-                    "name"
-                ]
+                default_persona = (
+                    self.context.persona_manager.selected_default_persona_v3
+                )
+                if default_persona:
+                    persona_id = default_persona["name"]
             persona = next(
                 builtins.filter(
                     lambda persona: persona["name"] == persona_id,
@@ -1255,11 +1263,14 @@ UID: {user_id} 此 ID 可用于设置管理员。
             if (persona and persona.get("tools") is None) or not persona:
                 # select all
                 toolset = tmgr.get_full_tool_set()
+                for tool in toolset:
+                    if not tool.active:
+                        toolset.remove_tool(tool.name)
             else:
                 toolset = ToolSet()
                 for tool_name in persona["tools"]:
                     tool = tmgr.get_func(tool_name)
-                    if tool:
+                    if tool and tool.active:
                         toolset.add_tool(tool)
             req.func_tool = toolset
             logger.debug(f"Tool set for persona {persona_id}: {toolset.names()}")
